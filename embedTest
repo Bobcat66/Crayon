@@ -1,2 +1,0 @@
-##{$setVar(NAME=varName,VALUE=EMBED{userInput('What is Your Name? ')}EMBED)}##
-##{$displayOut('Your name is VAR(varName)')}##
