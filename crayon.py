@@ -6,7 +6,7 @@ printRegex = re.compile(r"(?<=displayOut\(\').{1,}(?=\'\))")
 addRegex = re.compile(r"(?<=add\()[\d,\-,\+,\.]{1,}(?=\))")
 statementRegex = re.compile(r"(?<=\$)[^\$]{1,}") #Statements must begin with '$'
 varRegex = re.compile(r"(VAR\(([A-Za-z]+)\))") # VAR(<variable name>)
-setVarRegex = re.compile(r"(?<=setVar\()NAME=([A-Za-z]{1,}),VALUE=([A-Za-z0-9]{1,})(?=\))") #setVar(NAME=<variable name>,VALUE=<variable value>)
+setVarRegex = re.compile(r"(?<=setVar\()NAME=([A-Za-z]{1,}),VALUE=([^\)]{1,})(?=\))") #setVar(NAME=<variable name>,VALUE=<variable value>)
 
 
 variables = []

@@ -1,2 +1,2 @@
-##{$setVar(NAME=varOne,VALUE=HelloWorld)}##
-##{$displayOut('VAR(varOne)')}##
+##{$setVar(NAME=varOne,VALUE='Hello World')}##
+##{$displayOut(VAR(varOne))}##
