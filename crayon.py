@@ -1,12 +1,13 @@
 import re
 import sys
 
-execRegex = re.compile(r'(?<=##\{).{1,}(?=\}##)') #Defines execute command
+execRegex = re.compile(r'(?<=##{).{1,}(?=}##)') #Defines execute command
 printRegex = re.compile(r"(?<=displayOut\(\').{1,}(?=\'\))")
 addRegex = re.compile(r"(?<=add\()[\d,\-,\+,\.]{1,}(?=\))")
 statementRegex = re.compile(r"(?<=\$)[^\$]{1,}") #Statements must begin with '$'
 varRegex = re.compile(r"(VAR\(([A-Za-z]+)\))") # VAR(<variable name>)
 setVarRegex = re.compile(r"(?<=setVar\()NAME=([A-Za-z]{1,}),VALUE=([^\)]{1,})(?=\))") #setVar(NAME=<variable name>,VALUE=<variable value>)
+embedExecRegex = re.compile(r"(?<=EMBED{).+(?=}EMBED)")
 
 
 variables = []
