@@ -64,10 +64,10 @@ def embedExecute(codeVar):
     """
     Executes embedded code
     """
-    if not inputCommand(codeVar) == None:
-        return inputCommand(codeVar)
-    else:
-        return None
+    output = None
+    if not inputRegex.search(codeVar) == None:
+        output = inputCommand(codeVar)
+    return output
 
 def inputCommand(codeVar):
     """
