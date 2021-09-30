@@ -7,7 +7,8 @@ addRegex = re.compile(r"(?<=add\()[\d,\-,\+,\.]{1,}(?=\))")
 statementRegex = re.compile(r"(?<=\$)[^\$]{1,}") #Statements must begin with '$'
 varRegex = re.compile(r"(VAR\(([A-Za-z]+)\))") # VAR(<variable name>)
 setVarRegex = re.compile(r"(?<=setVar\()NAME=([A-Za-z]{1,}),VALUE=([^\)]{1,})(?=\))") #setVar(NAME=<variable name>,VALUE=<variable value>)
-embedExecRegex = re.compile(r"(?<=EMBED{).+(?=}EMBED)")
+embedExecRegex = re.compile(r"(EMBED{([^}]+)}EMBED)") #Example statement: $displayOut('Your Name is: EMBED{userInput('What is your name?')}EMBED')
+inputRegex = re.compile(r"(?<=userInput\(\').+(?=\'\))") #Input MUST HAVE a string
 
 
 variables = []
@@ -34,7 +35,16 @@ def variableParse(codeVar):
                 output = output.replace(variableTag[0], variable.value)
     return output
 
-
+def embedParse(codeVar):
+    """
+    Parses Embedded Code
+    """
+    embedList = embedExecRegex.findall(codeVar)
+    output = codeVar
+    for embed in embedList:
+        embedOutput = embedExecute(embed[1])
+        if not embedOutput == None:
+            output = output.replace(embed[0], embedOutput)
 
 
 
@@ -48,7 +58,27 @@ def parseStatements(codeVar):
         varParseStatement = variableParse(statement)
         execute(varParseStatement)
 
+def embedExecute(codeVar):
+    """
+    Executed embedded code
+    """
+    if not inputCommand(codeVar) == None:
+        return inputCommand(codeVar)
+    else:
+        return None
 
+def inputCommand(codeVar):
+    """
+    User input function
+    Embeddable = YES
+    """
+    inputSearch = inputRegex.search(codeVar)
+    if inputSearch == None:
+        return None
+    else:
+        output = input(inputSearch.group(0))
+        return output
+    
 def execute(codeVar):
     """
     Executes parsed statements
