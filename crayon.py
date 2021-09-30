@@ -45,6 +45,7 @@ def embedParse(codeVar):
         embedOutput = embedExecute(embed[1])
         if not embedOutput == None:
             output = output.replace(embed[0], embedOutput)
+    return output
 
 
 
@@ -56,11 +57,12 @@ def parseStatements(codeVar):
     statements = statementRegex.findall(codeVar)
     for statement in statements:
         varParseStatement = variableParse(statement)
-        execute(varParseStatement)
+        embedStatement = embedParse(varParseStatement)
+        execute(embedStatement)
 
 def embedExecute(codeVar):
     """
-    Executed embedded code
+    Executes embedded code
     """
     if not inputCommand(codeVar) == None:
         return inputCommand(codeVar)
