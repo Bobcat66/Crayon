@@ -1,6 +1,7 @@
 import re
 import sys
 
+
 execRegex = re.compile(r'(?<=##{).{1,}(?=}##)') #Defines execute command
 printRegex = re.compile(r"(?<=displayOut\(\').{1,}(?=\'\))")
 addRegex = re.compile(r"(?<=add\()[\d,\-,\+,\.]{1,}(?=\))")
@@ -9,9 +10,22 @@ varRegex = re.compile(r"(VAR\(([A-Za-z]+)\))") # VAR(<variable name>)
 setVarRegex = re.compile(r"(?<=setVar\()NAME=([A-Za-z]{1,}),VALUE=([^\)]{1,})(?=\))") #setVar(NAME=<variable name>,VALUE=<variable value>)
 embedExecRegex = re.compile(r"(EMBED{([^}]+)}EMBED)") #Example statement: $displayOut('Your Name is: EMBED{userInput('What is your name?')}EMBED')
 inputRegex = re.compile(r"(?<=userInput\(\').+(?=\'\))") #Input MUST HAVE a string
+ifRegex = re.compile(r"(?<=if\()CONDITION=(TRUE|FALSE),TRIGGER=([A-Za-z0-9]+)(?=\))")#Example statement: $if(CONDITION=TRUE,TRIGGER=01)
+evalRegex = re.compile(r"eval\('([^']+)'='([^']+)'\)")#Example statement: $eval('Hello'='Hello')
+trigExecRegex = re.compile(r"TRIG\{(.+)\}TRIG\[([A-Za-z0-9]+)\]")#Example: TRIG{<code goes here>}TRIG[<Trigger Name>]
+notIfRegex = re.compile(r"(?<=notIf\()CONDITION=(TRUE|FALSE),TRIGGER=([A-Za-z0-9]+)(?=\))")#opposite of if, disables trigger if CONDITION is TRUE, activates it if CONDITION is FALSE
+
+
 
 
 variables = []
+
+triggers = []
+
+class Trigger():
+    def __init__(self, name=None, value=False):
+        self.name = name
+        self.value = value
 
 class Variable():
     def __init__(self, name=None, value=None):
@@ -19,9 +33,19 @@ class Variable():
         self.value = value
 
 def initialize(codeVar):
-    runOne = execRegex.search(codeVar)
+    """
+    Handles execution commands such as ## and TRIG
+    """
+    runOne = execRegex.search(codeVar) #Executes ##
     if not runOne == None:
         parseStatements(runOne.group(0))
+
+    runTwo = trigExecRegex.search(codeVar) #Executes TRIG
+    if not runTwo == None:
+        for trigger in triggers:
+            if trigger.name == runTwo.group(2):
+                if trigger.value == True:
+                    parseStatements(runTwo.group(1))
 
 def variableParse(codeVar):
     """
@@ -67,6 +91,8 @@ def embedExecute(codeVar):
     output = None
     if not inputRegex.search(codeVar) == None:
         output = inputCommand(codeVar)
+    if not evalRegex.search(codeVar) == None:
+        output = evalCommand(codeVar)
     return output
 
 def inputCommand(codeVar):
@@ -90,6 +116,9 @@ def execute(codeVar):
     addCommand(codeVar)
     howSayCrayon(codeVar)
     setVar(codeVar)
+    ifCommand(codeVar)
+    notIfCommand(codeVar)
+
 
 def addCommand(codeVar):
     """
@@ -135,3 +164,61 @@ def setVar(codeVar):
     if varSetRun == None:
         return
     variables.append(Variable(name=varSetRun.group(1), value=varSetRun.group(2)))
+
+def evalCommand(codeVar):
+    """
+    Evaluates a statement as true or false
+    Is embeddable
+    """
+    evalSearch = evalRegex.search(codeVar)
+    if evalSearch == None:
+        return None
+    else:
+        if evalSearch.group(1) == evalSearch.group(2):
+            return 'TRUE'
+        else:
+            return 'FALSE'
+
+def ifCommand(codeVar):
+    """
+    Takes a boolean and executes code if it is true
+    """
+    ifSearch = ifRegex.search(codeVar)
+    if not ifSearch == None:
+        triggerExists = False
+        for trigger in triggers:
+            if trigger.name == ifSearch.group(2):
+                if ifSearch.group(1) == 'TRUE':
+                    trigger.value == True
+                elif ifSearch.group(1) == 'FALSE':
+                    trigger.value == False
+                triggerExists == True
+        if not triggerExists:
+            if ifSearch.group(1) == 'TRUE':
+                newTrig = Trigger(name=ifSearch.group(2), value=True)
+            elif ifSearch.group(1) == 'FALSE':
+                newTrig = Trigger(name=ifSearch.group(2), value=False)
+            triggers.append(newTrig)
+
+def notIfCommand(codeVar):
+    """
+    Takes a boolean and executes code if it is false,
+    opposite of if command
+    """
+    notIfSearch = notIfRegex.search(codeVar)
+    if not notIfSearch == None:
+        triggerExists = False
+        for trigger in triggers:
+            if trigger.name == notIfSearch.group(2):
+                if notIfSearch.group(1) == 'TRUE':
+                    trigger.value == False
+                elif notIfSearch.group(1) == 'FALSE':
+                    trigger.value == True
+                triggerExists == True
+        if not triggerExists:
+            if notIfSearch.group(1) == 'TRUE':
+                newTrig = Trigger(name=notIfSearch.group(2), value=False)
+            elif notIfSearch.group(1) == 'FALSE':
+                newTrig = Trigger(name=notIfSearch.group(2), value=True)
+            triggers.append(newTrig)
+        
