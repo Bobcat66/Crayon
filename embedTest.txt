@@ -9,4 +9,4 @@ embedding code EMBED{Like This}EMBED tells the interpreter to execute it First
 ##{$displayOut('EMBED{arith(3*3)}EMBED')}##
 ##{$displayOut('EMBED{arith(3/3)}EMBED')}##
 ##{$displayOut('EMBED{arith(3+3)}EMBED')}##
-##{$displayOut('EMBED{arith(3-4)}EMBED')}##
+##{$displayOut('EMBED{arith(3.2--4)}EMBED')}##
