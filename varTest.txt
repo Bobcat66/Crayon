@@ -1,2 +1,7 @@
-##{$setVar(NAME=varOne,VALUE='Hello World')}##
-##{$displayOut(VAR(varOne))}##
+##{$setVar(NAME=inVar,VALUE=EMBED{userInput('What is 2 + 2? ')}EMBED)}##
+##{$setVar(NAME=boolVar,VALUE=EMBED{eval('VAR(inVar)'='4')}EMBED)}##
+##{$displayOut('VAR(boolVar)')}##
+##{$if(CONDITION=VAR(boolVar),TRIGGER=isCorrect)}##
+    TRIG{$displayOut('Correct!')}TRIG[isCorrect]
+##{$notIf(CONDITION=VAR(boolVar),TRIGGER=notCorrect)}##
+    TRIG{$displayOut('Incorrect! Go to Jail!')}TRIG[notCorrect]

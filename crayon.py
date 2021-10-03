@@ -37,15 +37,14 @@ def initialize(codeVar):
     Handles execution commands such as ## and TRIG
     """
     runOne = execRegex.search(codeVar) #Executes ##
-    if not runOne == None:
+    if runOne is not None:
         parseStatements(runOne.group(0))
 
     runTwo = trigExecRegex.search(codeVar) #Executes TRIG
-    if not runTwo == None:
+    if runTwo is not None:
         for trigger in triggers:
-            if trigger.name == runTwo.group(2):
-                if trigger.value == True:
-                    parseStatements(runTwo.group(1))
+            if trigger.name == runTwo.group(2) and trigger.value is True:
+                parseStatements(runTwo.group(1))
 
 def variableParse(codeVar):
     """
@@ -67,7 +66,7 @@ def embedParse(codeVar):
     output = codeVar
     for embed in embedList:
         embedOutput = embedExecute(embed[1])
-        if not embedOutput == None:
+        if embedOutput is not None:
             output = output.replace(embed[0], embedOutput)
     return output
 
@@ -89,9 +88,9 @@ def embedExecute(codeVar):
     Executes embedded code
     """
     output = None
-    if not inputRegex.search(codeVar) == None:
+    if inputRegex.search(codeVar) is not None:
         output = inputCommand(codeVar)
-    if not evalRegex.search(codeVar) == None:
+    if evalRegex.search(codeVar) is not None:
         output = evalCommand(codeVar)
     return output
 
@@ -101,11 +100,11 @@ def inputCommand(codeVar):
     Embeddable = YES
     """
     inputSearch = inputRegex.search(codeVar)
-    if inputSearch == None:
+    if inputSearch is None:
         return None
-    else:
-        output = input(inputSearch.group(0))
-        return output
+    
+    output = input(inputSearch.group(0))
+    return output
     
 def execute(codeVar):
     """
@@ -125,7 +124,7 @@ def addCommand(codeVar):
     performs addition
     """
     addRun = addRegex.search(codeVar)
-    if addRun == None:
+    if addRun is None:
         return
     addNums = re.split(r'\+', addRun.group(0))
     addFloats = []
@@ -141,7 +140,7 @@ def addCommand(codeVar):
 def printCommand(codeVar):
     #Defines print statement
     printRun = printRegex.search(codeVar)
-    if printRun == None:
+    if printRun is None:
         return
     print(printRun.group(0))
 
@@ -161,7 +160,7 @@ def howSayCrayon(codeVar):
 
 def setVar(codeVar):
     varSetRun = setVarRegex.search(codeVar)
-    if varSetRun == None:
+    if varSetRun is None:
         return
     variables.append(Variable(name=varSetRun.group(1), value=varSetRun.group(2)))
 
@@ -171,7 +170,7 @@ def evalCommand(codeVar):
     Is embeddable
     """
     evalSearch = evalRegex.search(codeVar)
-    if evalSearch == None:
+    if evalSearch is None:
         return None
     else:
         if evalSearch.group(1) == evalSearch.group(2):
@@ -184,7 +183,7 @@ def ifCommand(codeVar):
     Takes a boolean and executes code if it is true
     """
     ifSearch = ifRegex.search(codeVar)
-    if not ifSearch == None:
+    if ifSearch is not None:
         triggerExists = False
         for trigger in triggers:
             if trigger.name == ifSearch.group(2):
@@ -206,7 +205,7 @@ def notIfCommand(codeVar):
     opposite of if command
     """
     notIfSearch = notIfRegex.search(codeVar)
-    if not notIfSearch == None:
+    if notIfSearch is not None:
         triggerExists = False
         for trigger in triggers:
             if trigger.name == notIfSearch.group(2):
