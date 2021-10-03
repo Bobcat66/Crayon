@@ -14,7 +14,7 @@ ifRegex = re.compile(r"(?<=if\()CONDITION=(True|False),TRIGGER=([A-Za-z0-9]+)(?=
 evalRegex = re.compile(r"eval\('([^']+)'='([^']+)'\)")#Example statement: $eval('Hello'='Hello')
 trigExecRegex = re.compile(r"TRIG\{(.+)\}TRIG\[([A-Za-z0-9]+)\]")#Example: TRIG{<code goes here>}TRIG[<Trigger Name>]
 notIfRegex = re.compile(r"(?<=notIf\()CONDITION=(True|False),TRIGGER=([A-Za-z0-9]+)(?=\))")#opposite of if, disables trigger if CONDITION is TRUE, activates it if CONDITION is FALSE
-arithRegex = re.compile(r"arith\(([0-9])([+,\-,*,/])([0-9])\)")
+arithRegex = re.compile(r"arith\((-?[0-9]*.?[0-9]+)([+,\-,*,/])(-?[0-9]*.?[0-9]+)\)") #syntax: arith(<number 1><operator><number 2>)
 comparRegex = re.compile(r"compare\(([0-9])([+,\-,*,/])([0-9])\)")
 
 variables = []
