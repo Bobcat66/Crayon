@@ -204,6 +204,5 @@ def notIfCommand(codeVar):
                 triggerExists == True
         if not triggerExists:
             newTrig = Trigger(name=notIfSearch.group(2), value=not bool(notIfSearch.group(1)))
-
             triggers.append(newTrig)
         
