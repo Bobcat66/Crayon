@@ -15,12 +15,27 @@ evalRegex = re.compile(r"eval\('([^']+)'='([^']+)'\)")#Example statement: $eval(
 trigExecRegex = re.compile(r"TRIG\{(.+)\}TRIG\[([A-Za-z0-9]+)\]")#Example: TRIG{<code goes here>}TRIG[<Trigger Name>]
 notIfRegex = re.compile(r"(?<=notIf\()CONDITION=(True|False),TRIGGER=([A-Za-z0-9]+)(?=\))")#opposite of if, disables trigger if CONDITION is TRUE, activates it if CONDITION is FALSE
 arithRegex = re.compile(r"arith\((-?[0-9]*.?[0-9]+)([+,\-,*,/])(-?[0-9]*.?[0-9]+)\)") #syntax: arith(<number 1><operator><number 2>)
-comparRegex = re.compile(r"compare\((-?[0-9]*.?[0-9]+)(<|>)(-?[0-9]*.?[0-9]+)\)")
+comparRegex = re.compile(r"compare\((-?[0-9]*.?[0-9]+)(<|>)(-?[0-9]*.?[0-9]+)\)") #syntax: compare(<number 1><operator><number 2>)
+gotoRegex = re.compile(r"GOTO\(([0-9]+)\)")
 
 variables = []
 
 triggers = []
 
+linecount = 0
+def executeProgram(lines):
+    global linecount
+    """
+    Initializes all elements in a list
+    (for GOTO statements)
+    Takes dictionary as input
+    """
+    totalLines = len(lines)
+    while linecount < totalLines:
+        initialize(lines.get(linecount))
+        linecount += 1
+
+    
 
 class Trigger():
     def __init__(self, name=None, value=False):
@@ -94,6 +109,8 @@ def embedExecute(codeVar):
         output = evalCommand(codeVar)
     if arithRegex.search(codeVar) is not None:
         output = arithCommand(codeVar)
+    if comparRegex.search(codeVar) is not None:
+        output = compareCommand(codeVar)
     return output
 
 def inputCommand(codeVar):
@@ -222,4 +239,15 @@ def arithCommand(codeVar):
         return str(float(arithSearch.group(1)) * float(arithSearch.group(3)))
     elif arithSearch.group(2) == '/':
         return str(float(arithSearch.group(1)) / float(arithSearch.group(3)))
+
+def compareCommand(codeVar):
+    """
+    Compares the value of two numbers
+    Is Embeddable
+    """
+    compareSearch = comparRegex.search(codeVar)
+    if compareSearch.group(2) == "<":
+        return str(float(compareSearch.group(1)) < float(compareSearch.group(3)))
+    elif compareSearch.group(2) == ">":
+        return str(float(compareSearch.group(1)) > float(compareSearch.group(3)))
         

@@ -10,3 +10,15 @@ embedding code EMBED{Like This}EMBED tells the interpreter to execute it First
 ##{$displayOut('EMBED{arith(3/3)}EMBED')}##
 ##{$displayOut('EMBED{arith(3+3)}EMBED')}##
 ##{$displayOut('EMBED{arith(3.2--4)}EMBED')}##
+
+##{$displayOut('EMBED{compare(3<17)}EMBED')}##
+##{$displayOut('EMBED{compare(3<-6)}EMBED')}##
+##{$displayOut('EMBED{compare(3>4)}EMBED')}##
+##{$displayOut('EMBED{compare(3.2>-4)}EMBED')}##
+
+##{$setVar(NAME=varNum,VALUE=EMBED{userInput('Pick a Number ')}EMBED)}##
+##{$if(CONDITION=EMBED{compare(VAR(varNum)>5)}EMBED,TRIGGER=largerThanFive)}##
+    TRIG{$displayOut('VAR(varNum) is greater than five')}TRIG[largerThanFive]
+##{$notIf(CONDITION=EMBED{compare(VAR(varNum)>5)}EMBED,TRIGGER=smallerThanFive)}##
+    TRIG{$displayOut('VAR(varNum) is smaller than five')}TRIG[smallerThanFive]
+
