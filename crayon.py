@@ -14,13 +14,13 @@ ifRegex = re.compile(r"(?<=if\()CONDITION=(True|False),TRIGGER=([A-Za-z0-9]+)(?=
 evalRegex = re.compile(r"eval\('([^']+)'='([^']+)'\)")#Example statement: $eval('Hello'='Hello')
 trigExecRegex = re.compile(r"TRIG\{(.+)\}TRIG\[([A-Za-z0-9]+)\]")#Example: TRIG{<code goes here>}TRIG[<Trigger Name>]
 notIfRegex = re.compile(r"(?<=notIf\()CONDITION=(True|False),TRIGGER=([A-Za-z0-9]+)(?=\))")#opposite of if, disables trigger if CONDITION is TRUE, activates it if CONDITION is FALSE
-
-
-
+arithRegex = re.compile(r"arith\(([0-9])([+,\-,*,/])([0-9])\)")
+comparRegex = re.compile(r"compare\(([0-9])([+,\-,*,/])([0-9])\)")
 
 variables = []
 
 triggers = []
+
 
 class Trigger():
     def __init__(self, name=None, value=False):
@@ -92,6 +92,8 @@ def embedExecute(codeVar):
         output = inputCommand(codeVar)
     if evalRegex.search(codeVar) is not None:
         output = evalCommand(codeVar)
+    if arithRegex.search(codeVar) is not None:
+        output = arithCommand(codeVar)
     return output
 
 def inputCommand(codeVar):
@@ -205,4 +207,15 @@ def notIfCommand(codeVar):
         if not triggerExists:
             newTrig = Trigger(name=notIfSearch.group(2), value=not bool(notIfSearch.group(1)))
             triggers.append(newTrig)
+
+def arithCommand(codeVar):
+    arithSearch = arithRegex.search(codeVar)
+    if arithSearch.group(2) == '+':
+        return str(float(arithSearch.group(1)) + float(arithSearch.group(3)))
+    elif arithSearch.group(2) == '-':
+        return str(float(arithSearch.group(1)) - float(arithSearch.group(3)))
+    elif arithSearch.group(2) == '*':
+        return str(float(arithSearch.group(1)) * float(arithSearch.group(3)))
+    elif arithSearch.group(2) == '/':
+        return str(float(arithSearch.group(1)) / float(arithSearch.group(3)))
         
