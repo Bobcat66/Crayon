@@ -35,6 +35,15 @@ def executeProgram(lines):
         initialize(lines.get(linecount))
         linecount += 1
 
+def boolString(string):
+    """
+    parses strings into booleans
+    """
+    if string == "True":
+        return True
+    else:
+        return False
+
     
 
 class Trigger():
@@ -136,6 +145,7 @@ def execute(codeVar):
     setVar(codeVar)
     ifCommand(codeVar)
     notIfCommand(codeVar)
+    gotoCommand(codeVar)
 
 
 def addCommand(codeVar):
@@ -180,7 +190,13 @@ def setVar(codeVar):
     varSetRun = setVarRegex.search(codeVar)
     if varSetRun is None:
         return
-    variables.append(Variable(name=varSetRun.group(1), value=varSetRun.group(2)))
+    variableExists = False
+    for variable in variables:
+        if variable.name == varSetRun.group(1): 
+            variableExists = True
+            variable.value = varSetRun.group(2)
+    if not variableExists:
+        variables.append(Variable(name=varSetRun.group(1), value=varSetRun.group(2)))
 
 def evalCommand(codeVar):
     """
@@ -203,10 +219,10 @@ def ifCommand(codeVar):
         triggerExists = False
         for trigger in triggers:
             if trigger.name == ifSearch.group(2):
-                trigger.value == bool(ifSearch.group(1))
-                triggerExists == True
+                trigger.value == boolString(ifSearch.group(1))
+                triggerExists = True
         if not triggerExists:
-            newTrig = Trigger(name=ifSearch.group(2), value=bool(ifSearch.group(1)))
+            newTrig = Trigger(name=ifSearch.group(2), value=boolString(ifSearch.group(1)))
             triggers.append(newTrig)
 
 def notIfCommand(codeVar):
@@ -219,10 +235,10 @@ def notIfCommand(codeVar):
         triggerExists = False
         for trigger in triggers:
             if trigger.name == notIfSearch.group(2):
-                trigger.value = not bool(notIfSearch.group(1))
-                triggerExists == True
+                trigger.value = not boolString(notIfSearch.group(1))
+                triggerExists = True
         if not triggerExists:
-            newTrig = Trigger(name=notIfSearch.group(2), value=not bool(notIfSearch.group(1)))
+            newTrig = Trigger(name=notIfSearch.group(2), value=not boolString(notIfSearch.group(1)))
             triggers.append(newTrig)
 
 def arithCommand(codeVar):
@@ -250,4 +266,13 @@ def compareCommand(codeVar):
         return str(float(compareSearch.group(1)) < float(compareSearch.group(3)))
     elif compareSearch.group(2) == ">":
         return str(float(compareSearch.group(1)) > float(compareSearch.group(3)))
+
+def gotoCommand(codeVar):
+    """
+    Sends execution back to a certain line (executeProgram only0
+    """
+    global linecount
+    gotoSearch = gotoRegex.search(codeVar)
+    if gotoSearch is not None:
+        linecount = int(gotoSearch.group(1)) - 2 #line number is offset by 2 because dictionary IDs go up from zero and executeProgram() adds 1 linecount at the end of its loop
         

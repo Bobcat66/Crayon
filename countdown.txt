@@ -1,0 +1,5 @@
+##{$setVar(NAME=count,VALUE=10)}##
+##{$notIf(CONDITION=EMBED{compare(VAR(count)<0)}EMBED,TRIGGER=countdown)}##
+    TRIG{$displayOut('VAR(count)')}TRIG[countdown]
+    TRIG{$setVar(NAME=count,VALUE=EMBED{arith(VAR(count)-1)}EMBED)}TRIG[countdown]
+    TRIG{$GOTO(2)}TRIG[countdown]
